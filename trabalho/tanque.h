@@ -13,10 +13,13 @@ struct Tanque {
   int v_x;
   int min_x, max_x, min_y, max_y;
   int atual;
+  int limite_inferior;
+  int limite_superior;
   ALLEGRO_BITMAP* bitmap[2];
 };
 
-void inicializa_tanque( Tanque* t, int x, int y );
+void inicializa_tanque( Tanque* t, int x, int y, 
+			int limite_inferior, int limite_superior );
 
 void finaliza_tanque( Tanque* t );
 

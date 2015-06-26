@@ -57,7 +57,7 @@ void inicializa_jogo( Jogo* jogo, int x, int y, int largura, int altura ) {
      inicializa_bunker( &jogo->bunker[i], x, 360 );
    } 
    
-   inicializa_tanque( &jogo->tanque, jogo->largura/2, 475 );
+   inicializa_tanque( &jogo->tanque, jogo->largura/2, 475, 0, jogo->largura );
 
    inicializa_zbuffer( &jogo->zbuffer, display, jogo->altura, jogo->largura, 
                        jogo->bunker, &jogo->tanque );

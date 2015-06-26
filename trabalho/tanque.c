@@ -16,7 +16,8 @@
 #define DELTA_X (-LARGURA_TANQUE/2)
 #define DELTA_Y (-ALTURA_TANQUE)
 
-void inicializa_tanque( Tanque* t, int x, int y ) {
+void inicializa_tanque( Tanque* t, int x, int y,
+			int limite_inferior, int limite_superior  ) {
   t->posicao_x = x;
   t->posicao_y = y;
   t->min_x = t->posicao_x + DELTA_X;
@@ -27,6 +28,8 @@ void inicializa_tanque( Tanque* t, int x, int y ) {
   t->v_x = 0;
   t->direcao = DIREITA;
   t->direcao_imagem = DIREITA;
+  t->limite_inferior = limite_inferior;
+  t->limite_superior = limite_superior;
   
   t->bitmap[0] = al_load_bitmap("imagens/tank_1.png");
   t->bitmap[1] = al_load_bitmap("imagens/tank_2.png");
@@ -58,11 +61,22 @@ void desenha_tanque( Tanque* t, COMANDO direcao ) {
 }
 
 void move_tanque( Tanque* t, COMANDO direcao ) {
-  if( t->direcao == direcao )
+  if( direcao == PARAR ) {
+    if( t->v_x > 0 )
+      t->v_x -= 2;
+    else if( t->v_x < 0 )
+      t->v_x += 2;      
+  }
+  else if( t->direcao == direcao )
     t->v_x += direcao;
-  else
-    t->v_x = direcao;
-    
+  else 
+    t->v_x -= 10*direcao;
+  
+  if( t->v_x > 50 ) 
+    t->v_x = 50;
+  else if( t->v_x < -50 )
+    t->v_x = -50;
+  
   if( direcao != PARAR )
     t->direcao_imagem = direcao;
   
@@ -72,6 +86,12 @@ void move_tanque( Tanque* t, COMANDO direcao ) {
   t->max_x = t->posicao_x - DELTA_X;
   t->min_y = t->posicao_x + DELTA_Y;
   t->min_y = t->posicao_y;
+  
+  if( t->posicao_x > t->limite_superior )
+    t->posicao_x = t->limite_superior;
+
+  if( t->posicao_x < t->limite_inferior )
+    t->posicao_x = t->limite_inferior;
 }
 
 void processa_tanque( Tanque* tanque ) {
