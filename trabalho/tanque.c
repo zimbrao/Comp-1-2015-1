@@ -24,6 +24,9 @@ void inicializa_tanque( Tanque* t, int x, int y ) {
   t->min_y = t->posicao_x + DELTA_Y;
   t->min_y = t->posicao_y;
   t->atual = 0;
+  t->v_x = 0;
+  t->direcao = DIREITA;
+  t->direcao_imagem = DIREITA;
   
   t->bitmap[0] = al_load_bitmap("imagens/tank_1.png");
   t->bitmap[1] = al_load_bitmap("imagens/tank_2.png");
@@ -39,10 +42,10 @@ void finaliza_tanque( Tanque* t ) {
   al_destroy_bitmap( t->bitmap[1] );
 }
 
-void desenha_tanque( Tanque* t, DIRECAO direcao ) {
+void desenha_tanque( Tanque* t, COMANDO direcao ) {
   int flags = 0;
   
-  if( direcao == DIREITA )
+  if( t->direcao_imagem == DIREITA )
     flags = ALLEGRO_FLIP_HORIZONTAL;
   
  al_set_blender(ALLEGRO_ADD, ALLEGRO_ONE, ALLEGRO_ALPHA); 
@@ -54,10 +57,17 @@ void desenha_tanque( Tanque* t, DIRECAO direcao ) {
   t->atual = (t->atual + 1) % 2;
 }
 
-void move_tanque( Tanque* t, DIRECAO direcao, int delta_x, int delta_y ) {
-  t->posicao_x += delta_x;
-  t->posicao_y += delta_y;  
+void move_tanque( Tanque* t, COMANDO direcao ) {
+  if( t->direcao == direcao )
+    t->v_x += direcao;
+  else
+    t->v_x = direcao;
+    
+  if( direcao != PARAR )
+    t->direcao_imagem = direcao;
+  
   t->direcao = direcao;
+  t->posicao_x += t->v_x/5;
   t->min_x = t->posicao_x + DELTA_X;
   t->max_x = t->posicao_x - DELTA_X;
   t->min_y = t->posicao_x + DELTA_Y;

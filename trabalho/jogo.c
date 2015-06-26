@@ -79,45 +79,54 @@ void desenha_jogo( Jogo* jogo ) {
    processa_zbuffer( &jogo->zbuffer );  
 }
 
-void move_tanque_jogo( Jogo* jogo, DIRECAO direcao ) {
+void move_tanque_jogo( Jogo* jogo, COMANDO direcao ) {
   switch( direcao ) {
     case ESQUERDA :
       if( jogo->tanque.min_x > 0 ) {
-        move_tanque( &jogo->tanque, direcao, -2, 0 );
+        move_tanque( &jogo->tanque, direcao );
       }  
       break;
 
     case DIREITA :
       if( jogo->tanque.max_x < 639 ) {
-        move_tanque( &jogo->tanque, direcao, 2, 0 );
+        move_tanque( &jogo->tanque, direcao );
       }
+      break;
+    case PARAR:
+      move_tanque( &jogo->tanque, direcao );
       break;
   }
 }
 
 void loop_eventos_jogo( Jogo* jogo ) {
    bool sair = false;
+   bool seta_direita_pressionada = false,
+        seta_esquerda_pressionada = false;
    
     while( !sair ) {
       if( !al_is_event_queue_empty(jogo->fila_eventos) ) {
 	ALLEGRO_EVENT evento;
         al_wait_for_event( jogo->fila_eventos, &evento );
 	
-	if( evento.type == ALLEGRO_EVENT_KEY_CHAR )
+	if( evento.type == ALLEGRO_EVENT_KEY_DOWN )
           switch( evento.keyboard.keycode ) {
-            case ALLEGRO_KEY_LEFT:
-              move_tanque_jogo( jogo, ESQUERDA );
-              break;
-            
-	    case ALLEGRO_KEY_RIGHT:
-              move_tanque_jogo( jogo, DIREITA );
-              break;
-            
-	    case ALLEGRO_KEY_X:
-	      sair = true;  
-	      break;
+            case ALLEGRO_KEY_LEFT: seta_esquerda_pressionada = true; break;
+	    case ALLEGRO_KEY_RIGHT: seta_direita_pressionada = true; break;
+          }
+        else if( evento.type == ALLEGRO_EVENT_KEY_UP ) 
+          switch( evento.keyboard.keycode ) {
+            case ALLEGRO_KEY_LEFT: seta_esquerda_pressionada = false; break;
+	    case ALLEGRO_KEY_RIGHT: seta_direita_pressionada = false; break;
+	    case ALLEGRO_KEY_X: sair = true; break;
           }
       }
+      
+      if( seta_direita_pressionada )
+        move_tanque_jogo( jogo, DIREITA );
+      else if( seta_esquerda_pressionada )   
+	move_tanque_jogo( jogo, ESQUERDA );
+      else
+	move_tanque_jogo( jogo, PARAR );
       
       desenha_jogo( jogo );
     }
